@@ -1,44 +1,55 @@
-#!/usr/bin/env python3
-import os
-from fastmcp import FastMCP
+import contextlib
+import uvicorn
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-mcp = FastMCP("Mosaic")
+from auth import AuthMiddleware
+from config import settings
+from mcp_server import mcp as mcp_router
+import json
 
-@mcp.tool(description="Greet a user by name with a welcome message from the MCP server")
-def greet(name: str) -> str:
-    return f"Hello, {name}! Welcome to our Mosaic MCP server running on Heroku!"
+@contextlib.asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with mcp_router.session_manager.run():
+        yield
 
-@mcp.tool(description="Get information about the MCP server including name, version, environment, and Python version")
-def get_server_info() -> dict:
-    return {
-        "server_name": "Mosaic MCP Server",
-        "version": "1.0.0",
-        "environment": os.environ.get("ENVIRONMENT", "development"),
-        "python_version": os.sys.version.split()[0]
-    }
+app = FastAPI(lifespan=lifespan)
 
-@mcp.tool(description="Get the users current playing track from Spotify with their user ID")
-def get_current_playing_track(user_id: str) -> dict:
-    # Here you would implement the logic to interact with the Spotify API
-    # and retrieve the current playing track for the given user_id.
-    # This is just a placeholder implementation.
-    print(f"Fetching current playing track for user_id: {user_id}")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+)
 
-    return {
-        "user_id": user_id,
-        "track": "Some Song",
-        "artist": "Some Artist",
-        "currently_playing": True
-    }
+@app.get("/.well-known/oauth-protected-resource/mcp")
+async def oauth_protected_resource_metadata():
+    """
+    OAuth 2.0 Protected Resource Metadata endpoint for MCP client discovery.
+    Required by the MCP specification for authorization server discovery.
+    """
+
+    response = json.loads(settings.METADATA_JSON_RESPONSE)
+    return response
+
+@app.get("/.well-known/oauth-protected-resource/resource")
+async def oauth_protected_resource():
+    """
+    OAuth 2.0 Protected Resource endpoint for MCP client discovery.
+    Required by the MCP specification for authorization server discovery.
+    """
+
+    response = json.loads(settings.METADATA_JSON_RESPONSE)
+    return response
+
+mcp_server = mcp_router.streamable_http_app()
+app.add_middleware(AuthMiddleware)
+app.mount("/", mcp_server)
+
+def main():
+    """Main entry point for the MCP server."""
+    uvicorn.run(app, host="localhost", port=settings.PORT, log_level="debug")
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-    host = "0.0.0.0"
-    
-    print(f"Starting FastMCP server on {host}:{port}")
-    
-    mcp.run(
-        transport="http",
-        host=host,
-        port=port
-    )
+    main()
