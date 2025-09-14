@@ -4,7 +4,7 @@ fastapi
 mcp
 starlette
 scalekit-sdk-python
-python-dotenv
+python-dotenv>=1.1.0
 httpx
 PyJWT
 scalekit-sdk-python>=2.3.2
