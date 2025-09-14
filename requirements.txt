@@ -7,6 +7,6 @@ scalekit-sdk-python
 python-dotenv>=1.1.0
 httpx
 PyJWT
-scalekit-sdk-python>=2.3.2
+scalekit-sdk-python>=2.4.1
 psycopg[binary]
 fastmcp>=2.12.0
