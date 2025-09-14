@@ -9,3 +9,4 @@ httpx
 PyJWT
 scalekit-sdk-python>=2.3.2
 psycopg[binary]
+fastmcp
