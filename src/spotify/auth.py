@@ -49,5 +49,7 @@ def refreshAccessToken(refresh_token):
         "refresh_token": refresh_token
     }
 
+    print("Refreshing token with data: ", data)
+
     response = requests.post(url, headers=headers, data=data)
     return response.json()

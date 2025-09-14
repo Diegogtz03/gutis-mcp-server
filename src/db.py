@@ -6,10 +6,13 @@ def checkExistingUser(session):
     print("Checking user in DB: ", session)
     with psycopg.connect(settings.DB_CONNECTION_STRING) as conn:
         with conn.cursor() as cur:
-            cur.execute("SELECT * FROM spotify WHERE spotify.user = %s", (session))
+            cur.execute("SELECT * FROM spotify WHERE spotify.user = %s", (session,))
             res = cur.fetchone()
             print("DB RESPONSE: ", res)
-            return res is not None
+            if res:
+                return res
+            else:
+                return None
 
 
 def addUser(session, accessToken, refreshToken):

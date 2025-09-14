@@ -22,7 +22,7 @@ def get_server_info() -> dict:
         "python_version": os.sys.version.split()[0]
     }
 
-@mcp.tool(description="Get the users current playing track from Spotify with their unique email")
+@mcp.tool(description="Get the users current playing track from Spotify")
 def get_current_playing_track() -> dict:
     user = getSpotifyUser("test_session")
 
@@ -33,9 +33,10 @@ def get_current_playing_track() -> dict:
     print("USER FROM DB: ", user)
     current_track = getCurrentPlayingTrack()
 
+    print("CURRENT TRACK: ", current_track)
+
     return {
-        "user_email": user["email"],
-        "track": current_track["name"],
-        "artist": current_track["artists"][0]["name"],
-        "currently_playing": True
+        "track": current_track["item"]["name"],
+        "artist": current_track["item"]["artists"][0]["name"],
+        "currently_playing": current_track["is_playing"]
     }
