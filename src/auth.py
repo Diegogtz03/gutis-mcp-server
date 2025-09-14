@@ -39,6 +39,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
             token = auth_header.split(" ")[1]
 
+            print(token)
+
             request_body = await request.body()
             
             # Parse JSON from bytes
