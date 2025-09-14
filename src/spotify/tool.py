@@ -3,7 +3,7 @@ from config import settings
 import requests
 
 def getCurrentPlayingTrack():
-    user = getSpotifyUser("")
+    user = getSpotifyUser("test_session")
 
     if not user:
         return None
