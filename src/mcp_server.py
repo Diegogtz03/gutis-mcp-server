@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 import os
 from mcp.server.fastmcp import FastMCP
+from mcp.server.auth.middleware.auth_context import get_access_token
+from spotify.auth import getSpotifyUser
+from spotify.tool import getCurrentPlayingTrack
 
 from config import settings
 
@@ -20,15 +23,18 @@ def get_server_info() -> dict:
     }
 
 @mcp.tool(description="Get the users current playing track from Spotify with their unique email")
-def get_current_playing_track(user_email: str) -> dict:
-    # Here you would implement the logic to interact with the Spotify API
-    # and retrieve the current playing track for the given user_email.
-    # This is just a placeholder implementation.
-    print(f"Fetching current playing track for user_email: {user_email}")
+def get_current_playing_track() -> dict:
+    user = getSpotifyUser("test_session")
+
+    if type(user) == str:
+        return {"error": "User not authenticated with Spotify", "message": "Please direct the user to the following URL to authenticate: {}".format(user)}
+
+    print("USER FROM DB: ", user)
+    current_track = getCurrentPlayingTrack()
 
     return {
-        "user_email": user_email,
-        "track": "Some Song",
-        "artist": "Some Artist",
+        "user_email": user["email"],
+        "track": current_track["name"],
+        "artist": current_track["artists"][0]["name"],
         "currently_playing": True
     }

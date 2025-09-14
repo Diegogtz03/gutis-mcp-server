@@ -29,7 +29,7 @@ scalekit_client = ScalekitClient(
 # Authentication middleware
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        if request.url.path.startswith("/.well-known/"):
+        if request.url.path.startswith("/.well-known/") or request.url.path.startswith("/callback"):
             return await call_next(request)
 
         try:
@@ -49,7 +49,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
             
             validation_options = TokenValidationOptions(
               issuer=settings.SCALEKIT_ENVIRONMENT_URL,
-              audience=[settings.SCALEKIT_AUDIENCE_NAME],
+            #   audience=[settings.SCALEKIT_AUDIENCE_NAME],
             )
             
             is_tool_call = request_data.get("method") == "tools/call"

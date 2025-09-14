@@ -1,12 +1,14 @@
 import contextlib
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from auth import AuthMiddleware
 from config import settings
 from mcp_server import mcp as mcp_router
 import json
+from spotify.auth import exchangeCodeForToken
+from db import addUser
 
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,9 +45,36 @@ async def oauth_protected_resource():
     response = json.loads(settings.METADATA_JSON_RESPONSE)
     return response
 
+@app.get("/callback")
+async def callbackPoint(request: Request):
+    """
+    Callback endpoint for Spotify authentication.
+    """
+    print("Callback received")
+
+    code = request.query_params.get("code")
+
+    print("Code received: ", code)
+
+    if not code:
+        return {"error": "Missing code parameter"}
+
+    token_response = exchangeCodeForToken(code)
+    
+    if "error" in token_response:
+        return {"error": "Failed to exchange code for token", "details": token_response}
+
+    print("Token response: ", token_response)
+
+    addUser("test_session", token_response["access_token"], token_response["refresh_token"])
+
+    # Handle the callback from Spotify here
+    return {"message": "You're IN :)"}
+
 mcp_server = mcp_router.streamable_http_app()
 app.add_middleware(AuthMiddleware)
 app.mount("/", mcp_server)
+
 
 def main():
     """Main entry point for the MCP server."""
