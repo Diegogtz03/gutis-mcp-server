@@ -49,7 +49,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
             
             validation_options = TokenValidationOptions(
               issuer=settings.SCALEKIT_ENVIRONMENT_URL,
-              audience=[settings.SCALEKIT_AUDIENCE_NAME],
+            #   audience=[settings.SCALEKIT_AUDIENCE_NAME],
             )
             
             is_tool_call = request_data.get("method") == "tools/call"
