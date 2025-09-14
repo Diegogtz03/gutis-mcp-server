@@ -49,18 +49,16 @@ class AuthMiddleware(BaseHTTPMiddleware):
             
             validation_options = TokenValidationOptions(
               issuer=settings.SCALEKIT_ENVIRONMENT_URL,
-            #   audience=[settings.SCALEKIT_AUDIENCE_NAME],
             )
             
             is_tool_call = request_data.get("method") == "tools/call"
             
             required_scopes = []
             if is_tool_call:
-                required_scopes = ["spotify:read"] # get required scope for your tool
+                required_scopes = ["spotify:read"]
                 validation_options.required_scopes = required_scopes  
             
             try:
-                print(f"Validating token: {token} with options: {validation_options}")
                 scalekit_client.validate_token(token, options=validation_options)
                 
             except Exception as e:

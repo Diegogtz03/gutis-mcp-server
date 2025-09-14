@@ -9,6 +9,8 @@ class Settings:
     SCALEKIT_CLIENT_SECRET: str = os.environ.get("SCALEKIT_CLIENT_SECRET", "")
     SCALEKIT_RESOURCE_METADATA_URL: str = os.environ.get("SCALEKIT_RESOURCE_METADATA_URL", "")
     SCALEKIT_AUDIENCE_NAME: str = os.environ.get("SCALEKIT_AUDIENCE_NAME", "")
+
+    ENCRYPTION_KEY: str = os.environ.get("ENCRYPTION_KEY", "")
     
     SPOTIFY_CLIENT_ID: str = os.environ.get("SPOTIFY_CLIENT_ID", "")
     SPOTIFY_CLIENT_SECRET: str = os.environ.get("SPOTIFY_CLIENT_SECRET", "")
@@ -42,5 +44,7 @@ class Settings:
             raise ValueError("SCALEKIT_AUDIENCE_NAME environment variable not set")
         if not self.DB_CONNECTION_STRING:
             raise ValueError("DB_CONNECTION_STRING environment variable not set")
+        if not self.ENCRYPTION_KEY:
+            raise ValueError("ENCRYPTION_KEY environment variable not set")
 
 settings = Settings()
