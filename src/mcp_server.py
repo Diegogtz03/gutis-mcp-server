@@ -27,6 +27,7 @@ def get_current_playing_track() -> dict:
     user = getSpotifyUser("test_session")
 
     if type(user) == str:
+        print("USER FROM DB: ", user)
         return {"error": "User not authenticated with Spotify", "message": "Please direct the user to the following URL to authenticate: {}".format(user)}
 
     print("USER FROM DB: ", user)
