@@ -60,16 +60,10 @@ async def callbackPoint(request: Request):
         return {"error": "Missing code parameter"}
 
     token_response = exchangeCodeForToken(code)
-    
-    if "error" in token_response:
-        return {"error": "Failed to exchange code for token", "details": token_response}
-
-    print("Token response: ", token_response)
 
     addUser("test_session", token_response["access_token"], token_response["refresh_token"])
 
-    # Handle the callback from Spotify here
-    return {"message": "You're IN :)"}
+    return token_response
 
 mcp_server = mcp_router.streamable_http_app()
 app.add_middleware(AuthMiddleware)
