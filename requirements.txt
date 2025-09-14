@@ -1,7 +1,7 @@
 fastapi>=0.115.12
 uvicorn>=0.35.0
 fastapi
-mcp
+mcp>=1.12.4,<2.0.0
 starlette
 scalekit-sdk-python
 python-dotenv>=1.1.0
