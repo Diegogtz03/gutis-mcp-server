@@ -14,7 +14,7 @@ def addUser(session, accessToken, refreshToken):
     with psycopg.connect(settings.DB_CONNECTION_STRING) as conn:
         with conn.cursor() as cur:
             uuid = os.urandom(16).hex()
-            cur.execute("INSERT INTO spotify (id, user, access_token, refresh_token) VALUES (%s, %s, %s)",(uuid, session, accessToken, refreshToken))
+            cur.execute("INSERT INTO spotify (id, user, access_token, refresh_token) VALUES (%s, %s, %s, %s)",(uuid, session, accessToken, refreshToken))
 
 
 def updateAccessToken(session, accessToken):
