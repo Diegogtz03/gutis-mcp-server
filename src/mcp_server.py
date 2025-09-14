@@ -7,7 +7,7 @@ from spotify.tool import getCurrentPlayingTrack
 
 from config import settings
 
-mcp = FastMCP("Mosaic")
+mcp = FastMCP("Mosaic", stateless_http=True)
 
 @mcp.tool(description="Greet a user by name with a welcome message from the MCP server")
 def greet(name: str) -> str:
