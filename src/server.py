@@ -8,7 +8,8 @@ from config import settings
 from mcp_server import mcp as mcp_router
 import json
 from spotify.auth import exchangeCodeForToken
-from db import addUser
+from db import addSpotifyUser
+from utils.headers import shorten_session_id
 
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -50,18 +51,16 @@ async def callbackPoint(request: Request):
     """
     Callback endpoint for Spotify authentication.
     """
-    print("Callback received")
 
     code = request.query_params.get("code")
+    session = request.query_params.get("state")
 
-    print("Code received: ", code)
-
-    if not code:
-        return {"error": "Missing code parameter"}
+    if not code or not session:
+        return {"error": "Missing code or session parameter"}
 
     token_response = exchangeCodeForToken(code)
 
-    addUser("test_session", token_response["access_token"], token_response["refresh_token"])
+    addSpotifyUser(session, token_response["access_token"], token_response["refresh_token"])
 
     return token_response
 
